@@ -1,6 +1,9 @@
 const express = require("express");
 const server = express();
 const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+
+server.use(bodyParser.json());
 
 const routes = require("./routes/tasks");
 
