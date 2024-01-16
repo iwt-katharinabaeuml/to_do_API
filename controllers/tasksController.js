@@ -44,16 +44,14 @@ const createTask = (req, res) => {
   newTask
     .save()
     .then((savedTask) => {
-      console.log("Task erfolgreich erstellt:", savedTask);
       res.status(201).json(savedTask);
     })
     .catch((err) => {
-      console.error("Fehler beim Erstellen des Tasks:", err);
-      res.status(500).json({ error: "Internal Server Error" });
+      console.error(err);
+      //   res.status(500).json({ error: "Internal Server Error" });
     });
 };
 
-// test in Postman with DELETE e.g.: http://localhost:3000/tasks/65a62f1672a61e589b45206e :
 const deleteTaskById = (req, res) => {
   console.log("Delete Task by ID :) ");
   const taskId = encodeURIComponent(req.params.id);
@@ -66,55 +64,74 @@ const deleteTaskById = (req, res) => {
         res.status(204).send();
       } else {
         console.log("task not found");
-        res.status(404).json({ error: "task not found" });
+        // res.status(404).json({ error: "task not found" });
       }
     })
     .catch((err) => {
-      console.error("Fehler beim Löschen des Tasks:", err);
+      console.error();
+      //   res.status(500).json({ error: "Internal Server Error" });
+    });
+};
+
+const updateTotalTask = (req, res) => {
+  console.log("Update Task (Total) :) ");
+  const taskId = encodeURIComponent(req.params.id);
+  const { description, creationDate, completionDate, priority, completed } =
+    req.body;
+  const defaultValues = new Task().toObject();
+  const updatedFields = {
+    description: description,
+    creationDate: creationDate
+      ? new Date(creationDate)
+      : defaultValues.creationDate,
+    completionDate: completionDate
+      ? new Date(completionDate)
+      : defaultValues.completionDate,
+    priority: priority || defaultValues.priority,
+    completed: completed !== undefined ? completed : defaultValues.completed,
+  };
+  Task.findOneAndUpdate({ _id: taskId }, updatedFields, {
+    new: true,
+    upsert: true,
+    setDefaultsOnInsert: true,
+  })
+    .then((updatedTask) => {
+      if (!updatedTask) {
+        return res.status(404).json({ error: "Task not found" });
+      }
+      res.json(updatedTask);
+    })
+    .catch((err) => {
+      console.error(err);
       res.status(500).json({ error: "Internal Server Error" });
     });
 };
 
-// const updateTaskParts = (req, res) => {
-//   console.log("Update Parts of a Task");
-//   const taskId = encodeURIComponent(req.params.id);
-//   console.log("Task ID", taskId);
-//   let { description, creationDate, completionDate, priority, completed } =
-//     req.body;
-//   const filter = { _id: taskId };
-//   const update = {};
-// };
-
-const updateTaskParts = async (req, res) => {
-  console.log("Update the whole Task");
+const updateTaskParts = (req, res) => {
+  console.log("Update parts (or everything)");
   const taskId = encodeURIComponent(req.params.id);
   let { description, creationDate, completionDate, priority, completed } =
     req.body;
 
-  try {
-    const updatedTask = await Task.findOneAndUpdate(
-      { _id: taskId },
-      {
-        description: description,
-        creationDate: creationDate,
-        completionDate: completionDate,
-        priority: priority,
-        completed: completed,
-      },
-      { new: true }
-    );
-
-    if (updatedTask) {
-      console.log("Full task updated", updatedTask);
-      res.status(200).json(updatedTask); // Status 200 "OK"
-    } else {
-      console.log("Task not found");
-      res.status(404).json({ error: "Task not found" }); // Status 404 "Not Found"
-    }
-  } catch (err) {
-    console.error("Could not be updated", err);
-    res.status(500).json({ error: "Internal Server Error" }); // Status 500 "Internal Server Error"
-  }
+  const updatedTasks = {
+    description: description,
+    creationDate: new Date(creationDate),
+    completionDate: new Date(completionDate),
+    priority: priority,
+    completed: completed,
+  };
+  Task.findByIdAndUpdate(
+    taskId,
+    updatedTasks,
+    { new: true } //{ new: true, upsert: true, setDefaultsOnInsert: true }
+  )
+    .then((updatedTask) => {
+      res.json(updatedTask);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({ error: "Internal Server Error" });
+    });
 };
 
 module.exports = {
@@ -123,4 +140,5 @@ module.exports = {
   createTask,
   deleteTaskById,
   updateTaskParts,
+  updateTotalTask,
 };

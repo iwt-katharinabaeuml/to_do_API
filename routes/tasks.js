@@ -6,4 +6,5 @@ router.get("/tasks/:id", controller.getTaskById);
 router.post("/tasks", controller.createTask);
 router.delete("/tasks/:id", controller.deleteTaskById);
 router.patch("/tasks/:id", controller.updateTaskParts);
+router.put("/tasks/:id", controller.updateTotalTask);
 module.exports = router;

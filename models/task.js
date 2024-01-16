@@ -12,7 +12,10 @@ const todoSchema = new Schema({
     type: Date,
     default: Date.now,
   },
-  completionDate: Date,
+  completionDate: {
+    type: Date,
+    default: () => new Date(Date.now() + 24 * 60 * 60 * 1000),
+  }, // folgeTag
   priority: {
     type: String,
     enum: ["high", "medium", "low", "none"],
