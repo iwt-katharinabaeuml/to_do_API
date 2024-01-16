@@ -4,7 +4,6 @@ const Task = require("../models/task");
 
 const getAllTasks = (req, res) => {
   console.log("Get all tasks");
-  //   res.send("Get all tasks :) ").then(
   Task.find()
     .sort({ completionDate: -1 })
     .then((tasks) => {
@@ -12,8 +11,6 @@ const getAllTasks = (req, res) => {
     })
     .catch((err) => console.log(err));
 };
-
-// test in Postman with GET e.g.: http://localhost:3000/tasks/65a62f1672a61e589b45206e :
 
 const getTaskById = (req, res) => {
   console.log("Get Task by ID :) ");
@@ -26,8 +23,6 @@ const getTaskById = (req, res) => {
     })
     .catch((err) => console.log(err));
 };
-
-// im Body der HTTP-Anfrage muss ein JSON mit den notwendigen Daten gesendet werden
 
 const createTask = (req, res) => {
   console.log("Create Task :) ");
