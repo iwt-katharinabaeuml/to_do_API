@@ -6,12 +6,13 @@ const getAllTasks = (req, res) => {
   Task.find()
     .sort({ completionDate: -1 })
     .then((tasks) => {
-      if (tastjs.length === 0) {
+      if (tasks.length === 0) {
         return res.status(404).send("No tasks found.");
       }
       res.json(tasks);
     })
     .catch((err) => {
+      console.log(err);
       res.status(500).send("Internal Server Error");
     });
 };

@@ -11,5 +11,5 @@ server.use("/", routes);
 
 mongoose
   .connect("mongodb://localhost:27017/to_do")
-  .then(server.listen(3000))
+  .then(server.listen(3001))
   .catch((err) => console.log(err));
