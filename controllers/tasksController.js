@@ -35,6 +35,8 @@ const createTask = (req, res) => {
   let { description, creationDate, completionDate, priority, completed } =
     req.body;
 
+  console.log(req.body);
+
   if (!description) {
     res.status(400).send("Description is required!");
     return;
@@ -87,6 +89,7 @@ const updateTotalTask = (req, res) => {
     completionDate: completionDate ? new Date(completionDate) : undefined,
     priority: priority,
     completed: completed,
+    $inc: { _version: 1 },
   };
   Task.findOneAndReplace({ _id: taskId }, updatedTasks, {
     new: true,
@@ -111,13 +114,14 @@ const updateTaskParts = (req, res) => {
   const taskId = encodeURIComponent(req.params.id);
   let { description, creationDate, completionDate, priority, completed } =
     req.body;
-
+  console.log(req.body);
   const updatedTasks = {
     description: description,
     creationDate: creationDate ? new Date(creationDate) : undefined,
     completionDate: completionDate ? new Date(completionDate) : undefined,
     priority: priority,
     completed: completed,
+    $inc: { _version: 1 },
   };
   Task.findByIdAndUpdate(
     taskId,
